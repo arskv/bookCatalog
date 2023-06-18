@@ -1,0 +1,264 @@
+<!doctype html>
+
+<style type="text/css">
+	
+	*
+{
+    outline: none;
+}
+
+html, body
+{
+    height: 100%;
+    min-height: 100%;
+}
+
+body
+{
+    margin: 0;
+    background-color: #00BFFF;
+}
+
+.tb
+{
+    display: table;
+    width: 100%;
+}
+
+.td
+{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.th
+{
+    display: table-cell;
+    vertical-align: middle;
+    color: #e16868;
+}
+.tr
+{
+	counter-reset: rowNumber;
+}
+
+input, button
+{
+    color: #fff;
+    font-family: Nunito;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background-color: transparent;
+}
+
+#cover
+{
+    position: absolute;
+    top: 38%;
+    left: 0;
+    right: 0;
+
+    padding: 35px;
+    margin: -83px auto 0 auto;
+    background-color: 	#87CEFA;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px #F8F8FF, 0 0 0 20px #ffffffeb;
+    transform: scale(0.6);
+}
+
+form
+{
+    height: 96px;
+}
+
+input[type="text"]
+{
+    width: 100%;
+    height: 96px;
+    font-size: 60px;
+    line-height: 1;
+}
+
+input[type="text"]::placeholder
+{
+    color: #F0FFFF;
+}
+
+h1,h2
+{
+    color: #F0FFFF;
+    font-size: 3em; margin: .67em 0
+}
+
+h3
+{
+    color: #F0FFFF;
+    font-size: 2em; margin: .67em 0
+}
+
+a
+{
+    color: 	#483D8B;
+    font-size: 1em; margin: .67em 0
+    padding-left: 40px;
+}
+
+#s-cover
+{
+    width: 1px;
+    padding-left: 35px;
+}
+
+button
+{
+    position: relative;
+    display: block;
+    width: 84px;
+    height: 96px;
+    cursor: pointer;
+}
+
+#s-circle
+{
+    position: relative;
+    top: -8px;
+    left: 0;
+    width: 43px;
+    height: 43px;
+    margin-top: 0;
+    border-width: 15px;
+    border: 15px solid #fff;
+    background-color: transparent;
+    border-radius: 50%;
+    transition: 0.5s ease all;
+}
+
+button span
+{
+    position: absolute;
+    top: 68px;
+    left: 43px;
+    display: block;
+    width: 45px;
+    height: 15px;
+    background-color: transparent;
+    border-radius: 10px;
+    transform: rotateZ(52deg);
+    transition: 0.5s ease all;
+}
+
+button span:before, button span:after
+{
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 45px;
+    height: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    transform: rotateZ(0);
+    transition: 0.5s ease all;
+}
+
+#s-cover:hover #s-circle
+{
+    top: -1px;
+    width: 67px;
+    height: 15px;
+    border-width: 0;
+    background-color: #fff;
+    border-radius: 20px;
+}
+
+#s-cover:hover span
+{
+    top: 50%;
+    left: 56px;
+    width: 25px;
+    margin-top: -9px;
+    transform: rotateZ(0);
+}
+
+#s-cover:hover button span:before
+{
+    bottom: 11px;
+    transform: rotateZ(52deg);
+}
+
+#s-cover:hover button span:after
+{
+    bottom: -11px;
+    transform: rotateZ(-52deg);
+}
+#s-cover:hover button span:before, #s-cover:hover button span:after
+{
+    right: -6px;
+    width: 40px;
+    background-color: #fff;
+}
+table
+{
+    margin:200px 0 0 25px;
+}
+#homeButton
+{
+	padding-left: 30px;
+	padding-top: 20px; 
+}
+
+</style>
+
+<div id = 'homeButton'>
+    <a href="http://localhost:9874/"><b>Home</b></a> | 
+    <a href="http://localhost:9874/search_all"><b>Search All</b></a>
+</div>
+<html>
+	<h1 align="center">Catalog</h1>
+   	<h2 align="center">U.S Small Business Adminstration</h2>
+   <body>
+   	
+   	<div id="cover">
+
+      <form action = "search" method = "POST">
+      	<div class="tb">
+         <div class="td"><input type="text" placeholder="Search Catalog Eg - California, Victoria etc..." name="search_box" required></div>
+         <div class="td" id="s-cover"><button type="submit" name="submit"><div id="s-circle"></div></div>
+         <span></span>
+		</div>
+      </form>
+   </div>
+
+    </body>
+</html>
+
+<html>
+   <body>
+      <table border = 0>
+      	{% if results %}
+      	      	<tr></tr>
+     		<tr>
+     			<th align="center"><h2> Complete Results - {{ results['hits']['total'] }} </h2></th>
+     		</tr>
+     		{% for dataset in results['hits']['hits'] %}
+     			<tr> <td align="center">
+     				{% if dataset['_source']['landingPage'] %}
+     					<b>{{ loop.index }}.<a href="{{ dataset['_source']['landingPage'] }}"> {{ dataset['_source']['title'] }}</a></b>
+     				{% else %}
+     					<b>{{ loop.index }}.{{ dataset['_source']['title'] }}  -- [Landing Page Unavailable]</b>
+     				{% endif %}
+     				<li><b>Description: </b>{{ dataset['_source']['description'] }}</li>    				
+     				{% if dataset['_source']['license'] %}
+     					<li><a href="{{ dataset['_source']['license'] }}"><b>License</b></a></li>
+     				{% endif %}
+     				<li><b>Modified: </b>{{ dataset['_source']['modified'] }}</li>
+     				{% if dataset['_source']['contactPoint'] %}
+     					<li><b>Contact Details: <a href="mailto: {{ dataset['_source']['contactPoint']['hasEmail'] }}">{{ dataset['_source']['contactPoint']['fn'] }}</a></b></li><br><br><br>
+     				{% endif %}
+     			</td></tr>
+        	{% endfor %} 	
+        {% endif %}
+      </table>
+   </body>
+</html>
